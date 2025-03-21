@@ -1,5 +1,6 @@
-import { webpack } from 'next/dist/compiled/webpack/webpack'
+import type { webpack } from 'next/dist/compiled/webpack/webpack'
 import type { Span } from '../trace'
+import getWebpackBundler from '../shared/lib/get-webpack-bundler'
 
 export type CompilerResult = {
   errors: webpack.StatsError[]
@@ -50,8 +51,10 @@ export function runCompiler(
     inputFileSystem?: webpack.Compiler['inputFileSystem'],
   ]
 > {
+  const bundler = getWebpackBundler()
   return new Promise((resolve, reject) => {
-    const compiler = webpack(config)
+    const compiler = bundler(config)
+
     // Ensure we use the previous inputFileSystem
     if (inputFileSystem) {
       compiler.inputFileSystem = inputFileSystem
